@@ -1,6 +1,8 @@
-from django.shortcuts import render ,HttpResponse
+from django.shortcuts import render 
 from yahoo_fin.stock_info import *
+from django.http.response import HttpResponse
 
+import time
 
 def stockPicker(request):
     stock_picker = tickers_nifty50()
@@ -17,11 +19,16 @@ def stockTracker(request):
     for i in stockpicker:
         if i not in available_stocks:
             return HttpResponse("ERROR")
+    start= time.time()    
+    print(start)    
     for i in stockpicker:
         details = get_quote_table(i)
         data.update({i:details})
-
-
+    end=time.time() 
+    time_taken =end - start
+    print("time",time_taken)
+    
+    
     print(data)
 
 
