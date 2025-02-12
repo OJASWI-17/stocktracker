@@ -18,38 +18,25 @@ def stockPicker(request):
     return render(request, 'mainapp/stockpicker.html', {'stock_picker': stock_picker})
 
 def stockTracker(request):
-    # Fetch stock details for HDFCBANK.NS using yfinance
-    ticker = 'HDFCBANK.NS'
-    stock = yf.Ticker(ticker)
-    details = stock.info  # Get all available stock info
+    # Get the selected stocks from the request
+    selected_stocks = request.GET.getlist('stock_picker')  # Get all selected stocks
 
-    # Extract the required fields
-    current_price = details.get('currentPrice', 'N/A')  # Current price
-    previous_close = details.get('previousClose', 'N/A')  # Previous close
-    volume = details.get('volume', 'N/A')  # Trading volume
-    market_cap = details.get('marketCap', 'N/A')  # Market capitalization
-    open_price = details.get('open', 'N/A')  # Open price
-    day_high = details.get('dayHigh', 'N/A')  # Day's high
-    day_low = details.get('dayLow', 'N/A')  # Day's low
+    # Fetch data for each selected stock
+    data = {}
+    for ticker in selected_stocks:
+        stock = yf.Ticker(ticker)
+        details = stock.info  # Get all available stock info
 
-    # Print the details for debugging
-    # print(f"Details for {ticker}:")
-    # print(f"Current Price: {current_price}")
-    # print(f"Previous Close: {previous_close}")
-    # print(f"Volume: {volume}")
-    # print(f"Market Cap: {market_cap}")
-    # print(f"Open Price: {open_price}")
-    # print(f"Day's High: {day_high}")
-    # print(f"Day's Low: {day_low}")
+        # Extract the required fields
+        data[ticker] = {
+            'current_price': details.get('currentPrice', 'N/A'),
+            'previous_close': details.get('previousClose', 'N/A'),
+            'volume': details.get('volume', 'N/A'),
+            'market_cap': details.get('marketCap', 'N/A'),
+            'open_price': details.get('open', 'N/A'),
+            'day_high': details.get('dayHigh', 'N/A'),
+            'day_low': details.get('dayLow', 'N/A'),
+        }
 
-    # Pass the details to the template
-    return render(request, 'mainapp/stocktracker.html', {
-        'ticker': ticker,
-        'current_price': current_price,
-        'previous_close': previous_close,
-        'volume': volume,
-        'market_cap': market_cap,
-        'open_price': open_price,
-        # 'day_high': day_high,
-        # 'day_low': day_low,
-    })
+    # Pass the data to the template
+    return render(request, 'mainapp/stocktracker.html', {'data': data})

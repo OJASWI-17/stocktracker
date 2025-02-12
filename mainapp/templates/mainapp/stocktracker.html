@@ -36,15 +36,15 @@ StockTracker
           
         </thead>
         <tbody>
-          {% comment %} {% for key , value in data.items%} {% endcomment %}
+          {% for ticker , details in data.items %}
           <tr>
             <th scope="row">{{forloop.counter}}</th>
             <td>{{ ticker }}</td>
-            <td>{{ current_price }}</td>
-            <td>{{ previous_close }}</td>
-            <td>{{ open_price }}</td>
-            <td>{{ market_cap }}</td>
-            <td>{{ volume }}</td>
+            <td>{{ details.current_price }}</td>
+            <td>{{ details.previous_close }}</td>
+            <td>{{ details.open_price }}</td>
+            <td>{{ details.market_cap }}</td>
+            <td>{{ details.volume }}</td>
 
             
 
@@ -57,7 +57,7 @@ StockTracker
             <td>{{value|get:"Volume"}}</td> {% endcomment %}
             
           </tr>
-          {% comment %} {%endfor%} {% endcomment %}
+          {%endfor%}
          
         </tbody>
       </table>
