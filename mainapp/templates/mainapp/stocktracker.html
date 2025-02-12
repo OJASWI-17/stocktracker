@@ -2,8 +2,9 @@
 
 {%load static%}
 
-
+{%load myfilters%}
 {%block title%}
+
 StockTracker
 {% endblock%}
 
@@ -16,35 +17,48 @@ StockTracker
 
 {%block body%}
    <div class="container">
-    <h1>Live Stock Tracker</h1>
+    
+    <h1>Live Stock Tracker - {{ ticker }}</h1>
     <table class="table-container">
     <table class="table">
         <thead>
+          
           <tr>
-            <th scope="col">#</th>
-            <th scope="col">First</th>
-            <th scope="col">Last</th>
-            <th scope="col">Handle</th>
+            <th scope="col">SNo.</th>
+            <th scope="col">Stock</th>
+            <th scope="col">Price</th>
+            <th scope="col">Previous Close</th>
+            <th scope="col">Open</th>
+            
+            <th scope="col">Market Cap</th>
+            <th scope="col">Volume</th>
           </tr>
+          
         </thead>
         <tbody>
+          {% comment %} {% for key , value in data.items%} {% endcomment %}
           <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{ ticker }}</td>
+            <td>{{ current_price }}</td>
+            <td>{{ previous_close }}</td>
+            <td>{{ open_price }}</td>
+            <td>{{ market_cap }}</td>
+            <td>{{ volume }}</td>
+
+            
+
+            {% comment %} <td>{{key}}</td> {% endcomment %}
+            {% comment %} <td>{{value|get:"Quote Price"}}</td>
+            <td>{{value|get:"Previous Close"}}</td>
+            <td>{{value|get:"Open"}}</td>
+            <td>{{value|get:"change"}}</td>
+            <td>{{value|get:"Market Cap"}}</td>
+            <td>{{value|get:"Volume"}}</td> {% endcomment %}
+            
           </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td colspan="2">Larry the Bird</td>
-            <td>@twitter</td>
-          </tr>
+          {% comment %} {%endfor%} {% endcomment %}
+         
         </tbody>
       </table>
    </div>
