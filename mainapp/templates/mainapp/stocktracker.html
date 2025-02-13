@@ -10,7 +10,13 @@ StockTracker
 
 {%block css%}
 <style>
+.red{
+  color:red;
 
+}
+.green{
+  color:green;
+}
 
 </style>
 {% endblock%}
@@ -29,6 +35,7 @@ StockTracker
             <th scope="col">Price</th>
             <th scope="col">Previous Close</th>
             <th scope="col">Open</th>
+            <th scope="col">Change</th>
             
             <th scope="col">Market Cap</th>
             <th scope="col">Volume</th>
@@ -40,9 +47,23 @@ StockTracker
           <tr>
             <th scope="row">{{forloop.counter}}</th>
             <td>{{ ticker }}</td>
-            <td>{{ details.current_price }}</td>
-            <td>{{ details.previous_close }}</td>
+            <td id="{{ticker}}_price">{{ details.current_price | floatformat:3}}</td>
+            <td id="{{ticker}}_prevprice">{{ details.previous_close |floatformat:3}}</td>
             <td>{{ details.open_price }}</td>
+            <td id="{{ticker}}_change">
+              <script>
+                var change = document.getElementById("{{ticker}}_price").innerHTML - document.getElementById("{{ticker}}_prevprice").innerHTML;
+                change =Number(change.toFixed(3));
+                if(change >=0){
+                  document.getElementById("{{ticker}}_change").className = "green"
+                }else{
+                  document.getElementById("{{ticker}}_change").className = "red"
+
+                }
+
+                document.getElementById("{{ticker}}_change").innerHTML =change;
+              </script>
+            </td>
             <td>{{ details.market_cap }}</td>
             <td>{{ details.volume }}</td>
 

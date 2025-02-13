@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import yfinance as yf
+from threading import Thread
 
 def stockPicker(request):
     # Hardcoded list of Nifty 50 tickers
@@ -17,13 +18,9 @@ def stockPicker(request):
     ]
     return render(request, 'mainapp/stockpicker.html', {'stock_picker': stock_picker})
 
-def stockTracker(request):
-    # Get the selected stocks from the request
-    selected_stocks = request.GET.getlist('stock_picker')  # Get all selected stocks
-
-    # Fetch data for each selected stock
-    data = {}
-    for ticker in selected_stocks:
+def fetch_stock_data(ticker, data):
+    """Helper function to fetch stock data using yfinance."""
+    try:
         stock = yf.Ticker(ticker)
         details = stock.info  # Get all available stock info
 
@@ -37,6 +34,31 @@ def stockTracker(request):
             'day_high': details.get('dayHigh', 'N/A'),
             'day_low': details.get('dayLow', 'N/A'),
         }
+    except Exception as e:
+        print(f"Error fetching data for {ticker}: {e}")
+        data[ticker] = {
+            'error': f"Failed to fetch data for {ticker}"
+        }
+
+def stockTracker(request):
+    # Get the selected stocks from the request
+    selected_stocks = request.GET.getlist('stock_picker')  # Get all selected stocks
+
+    # Dictionary to store stock data
+    data = {}
+
+    # Create a list to hold thread objects
+    threads = []
+
+    # Create and start a thread for each stock
+    for ticker in selected_stocks:
+        thread = Thread(target=fetch_stock_data, args=(ticker, data))
+        threads.append(thread)
+        thread.start()
+
+    # Wait for all threads to complete
+    for thread in threads:
+        thread.join()
 
     # Pass the data to the template
     return render(request, 'mainapp/stocktracker.html', {'data': data})
