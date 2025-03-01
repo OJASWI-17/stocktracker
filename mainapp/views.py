@@ -19,7 +19,7 @@ def stockPicker(request):
     return render(request, 'mainapp/stockpicker.html', {'stock_picker': stock_picker})
 
 def fetch_stock_data(ticker, data):
-    """Helper function to fetch stock data using yfinance."""
+     
     try:
         stock = yf.Ticker(ticker)
         details = stock.info  # Get all available stock info
