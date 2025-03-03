@@ -25,7 +25,7 @@ StockTracker
    <div class="container">
     
     <h1>Live Stock Tracker - {{ ticker }}</h1>
-    <table class="table-container">
+    <div class="table-container">
     <table class="table">
         <thead>
           
@@ -49,7 +49,7 @@ StockTracker
             <td>{{ ticker }}</td>
             <td id="{{ticker}}_price">{{ details.current_price | floatformat:3}}</td>
             <td id="{{ticker}}_prevprice">{{ details.previous_close |floatformat:3}}</td>
-            <td>{{ details.open_price }}</td>
+            <td id="{{ticker}}_open">{{ details.open_price }}</td>
             <td id="{{ticker}}_change">
               <script>
                 var change = document.getElementById("{{ticker}}_price").innerHTML - document.getElementById("{{ticker}}_prevprice").innerHTML;
@@ -61,11 +61,10 @@ StockTracker
 
                 }
 
-                document.getElementById("{{ticker}}_change").innerHTML =change;
               </script>
             </td>
-            <td>{{ details.market_cap }}</td>
-            <td>{{ details.volume }}</td>
+            <td id="{{ticker}}_cap">{{ details.market_cap }}</td>
+            <td id="{{ticker}}_vol">{{ details.volume }}</td>
 
             
 
@@ -82,13 +81,56 @@ StockTracker
          
         </tbody>
       </table>
+      </div>
    </div>
+
+{{room_name|json_script:"room-name"}}
+   <script>
+    const roomName = JSON.parse(document.getElementById('room-name').textContent);
+    var queryString = window.location.search;
+    queryString =queryString.substring(1);
+    console.log(queryString);
+    const stockSocket = new WebSocket(
+      'ws://'
+      + window.location.host
+      + '/ws/stocktracker/'
+      + roomName
+      + '/'
+      +'?'
+      + queryString
+      
+    );
+    {% comment %} const username = JSON.parse(document.getElementById('username').textContent); {% endcomment %}
+    stockSocket.onmessage = function(e){
+      console.log(e.data);
+
+      const data = JSON.parse(e.data);
+      console.log(data);
+      for(const [key,value] of Object.entries(data)){
+        console.log(key,value);
+        document.getElementById(key+"_price").innerHTML = value.current_price;
+        document.getElementById(key+"_prevprice").innerHTML = value.previous_close;         
+        document.getElementById(key+"_open").innerHTML = value.open_price;
+        document.getElementById(key+"_cap").innerHTML = value.market_cap;
+        document.getElementById(key+"_vol").innerHTML = value.volume;
+        var change = document.getElementById(key+"_price").innerHTML - document.getElementById(key+"_prevprice").innerHTML;
+        change =Number(change.toFixed(4));
+        if(change >=0){
+          document.getElementById(key+"_change").className = "green";
+          document.getElementById(key+"_change").innerHTML = "+" + change;
+
+      }else if (change <0){
+        document.getElementById(key+"_change").className = "red";
+        document.getElementById(key+"_change").innerHTML = change;
+      }
+      }
+
+      
+    };
+   </script>
 {% endblock%}
 
 {%block js%}
-<script>
 
-
-</script>
 
 {% endblock%}

@@ -1,7 +1,8 @@
 from celery import shared_task
 from threading import Thread
 import yfinance as yf
-
+from channels.layers import get_channel_layer
+import asyncio
 def fetch_stock_data(ticker, data):
     """Function to fetch stock data using yfinance"""
     try:
@@ -39,5 +40,14 @@ def update_stock(self, selected_stocks):
     # Wait for all threads to complete
     for thread in threads:
         thread.join()
+
+    channel_layer = get_channel_layer()
+    loop = asyncio.new_event_loop()
+    
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(channel_layer.group_send('stock_track', {
+        'type': 'send_stock_update',
+        'message': data ,
+    }))
 
     return data  

@@ -46,11 +46,11 @@ app.conf.update(timezone='Asia/Kolkata')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.conf.beat_schedule = {
-    'every-10-seconds': {
-        'task': 'mainapp.tasks.update_stock',  # Corrected task path
-        'schedule': 10.0,
-        'args': (['RELIANCE.NS', 'TCS.NS'],)  # Correct tuple format
-    }
+    # 'every-10-seconds': {
+    #     'task': 'mainapp.tasks.update_stock',  # Corrected task path
+    #     'schedule': 10.0,
+    #     'args': (['RELIANCE.NS', 'TCS.NS'],)  # Correct tuple format
+    # }
 }
 
 app.conf.beat_scheduler = 'django_celery_beat.schedulers:DatabaseScheduler'

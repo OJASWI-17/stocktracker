@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'mainapp',
     'django_celery_results', 
     'django_celery_beat',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +72,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'stockproject.wsgi.application'
+ASGI_APPLICATION = 'stockproject.asgi.application'
 
 
 # Database
@@ -138,3 +140,11 @@ CELERY_RESULT_BACKEND = 'django-db'# at which place the result will be stored
 
 # CELERY_BEAT_SCHEDULE = 'django_celery_beat.schedulers:DatabaseScheduler'
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}

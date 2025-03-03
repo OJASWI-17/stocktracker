@@ -1,7 +1,8 @@
 from django.shortcuts import render
 import yfinance as yf
 from threading import Thread
-
+from django.http import HttpResponse
+from asgiref.sync import sync_to_async
 def stockPicker(request):
     # Hardcoded list of Nifty 50 tickers
     stock_picker = [
@@ -39,8 +40,18 @@ def fetch_stock_data(ticker, data):
         data[ticker] = {
             'error': f"Failed to fetch data for {ticker}"
         }
-
-def stockTracker(request):
+        
+@sync_to_async        
+def checkAuthenticated(request):
+    if not request.user.is_authenticated:
+        return False
+    else:
+        return True
+    
+async def stockTracker(request):
+    is_loginned =  checkAuthenticated(request)
+    if not is_loginned:
+        return HttpResponse("You are not logged in")
     # Get the selected stocks from the request
     selected_stocks = request.GET.getlist('stock_picker')  # Get all selected stocks
 
@@ -61,4 +72,4 @@ def stockTracker(request):
         thread.join()
 
     # Pass the data to the template
-    return render(request, 'mainapp/stocktracker.html', {'data': data})
+    return render(request, 'mainapp/stocktracker.html', {'data': data , 'room_name': 'track'})
